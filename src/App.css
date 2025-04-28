@@ -36,10 +36,6 @@
   font-size: 12px;
   display: inline-block;
 }
-.pokemon-name {
-  font-weight: bold;
-  margin-top: 10px;
-}
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
