@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/AyanMalaviya.github.io/Pokedex/static/css/main.5a379b14.css",
-    "main.js": "/AyanMalaviya.github.io/Pokedex/static/js/main.597405cc.js",
-    "static/js/453.ac4c0547.chunk.js": "/AyanMalaviya.github.io/Pokedex/static/js/453.ac4c0547.chunk.js",
-    "static/media/slick.svg": "/AyanMalaviya.github.io/Pokedex/static/media/slick.2630a3e3eab21c607e21.svg",
-    "static/media/slick.eot": "/AyanMalaviya.github.io/Pokedex/static/media/slick.a4e97f5a2a64f0ab1323.eot",
-    "static/media/slick.ttf": "/AyanMalaviya.github.io/Pokedex/static/media/slick.c94f7671dcc99dce43e2.ttf",
-    "static/media/slick.woff": "/AyanMalaviya.github.io/Pokedex/static/media/slick.295183786cd8a1389865.woff",
-    "index.html": "/AyanMalaviya.github.io/Pokedex/index.html",
-    "main.5a379b14.css.map": "/AyanMalaviya.github.io/Pokedex/static/css/main.5a379b14.css.map",
-    "main.597405cc.js.map": "/AyanMalaviya.github.io/Pokedex/static/js/main.597405cc.js.map",
-    "453.ac4c0547.chunk.js.map": "/AyanMalaviya.github.io/Pokedex/static/js/453.ac4c0547.chunk.js.map"
+    "main.css": "/Pokedex/static/css/main.de9e8157.css",
+    "main.js": "/Pokedex/static/js/main.3c3c4581.js",
+    "static/js/453.ac4c0547.chunk.js": "/Pokedex/static/js/453.ac4c0547.chunk.js",
+    "static/media/slick.svg": "/Pokedex/static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "/Pokedex/static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/slick.ttf": "/Pokedex/static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "/Pokedex/static/media/slick.295183786cd8a1389865.woff",
+    "index.html": "/Pokedex/index.html",
+    "main.de9e8157.css.map": "/Pokedex/static/css/main.de9e8157.css.map",
+    "main.3c3c4581.js.map": "/Pokedex/static/js/main.3c3c4581.js.map",
+    "453.ac4c0547.chunk.js.map": "/Pokedex/static/js/453.ac4c0547.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5a379b14.css",
-    "static/js/main.597405cc.js"
+    "static/css/main.de9e8157.css",
+    "static/js/main.3c3c4581.js"
   ]
 }
