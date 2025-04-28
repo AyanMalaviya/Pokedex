@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/ayanmalaviya.github.io/pokedex/static/css/main.6bcd2c5c.css",
-    "main.js": "/ayanmalaviya.github.io/pokedex/static/js/main.9c44a194.js",
-    "static/js/453.ac4c0547.chunk.js": "/ayanmalaviya.github.io/pokedex/static/js/453.ac4c0547.chunk.js",
-    "static/media/slick.svg": "/ayanmalaviya.github.io/pokedex/static/media/slick.2630a3e3eab21c607e21.svg",
-    "static/media/slick.eot": "/ayanmalaviya.github.io/pokedex/static/media/slick.a4e97f5a2a64f0ab1323.eot",
-    "static/media/slick.ttf": "/ayanmalaviya.github.io/pokedex/static/media/slick.c94f7671dcc99dce43e2.ttf",
-    "static/media/slick.woff": "/ayanmalaviya.github.io/pokedex/static/media/slick.295183786cd8a1389865.woff",
-    "index.html": "/ayanmalaviya.github.io/pokedex/index.html",
-    "main.6bcd2c5c.css.map": "/ayanmalaviya.github.io/pokedex/static/css/main.6bcd2c5c.css.map",
-    "main.9c44a194.js.map": "/ayanmalaviya.github.io/pokedex/static/js/main.9c44a194.js.map",
-    "453.ac4c0547.chunk.js.map": "/ayanmalaviya.github.io/pokedex/static/js/453.ac4c0547.chunk.js.map"
+    "main.css": "/AyanMalaviya.github.io/Pokedex/static/css/main.5a379b14.css",
+    "main.js": "/AyanMalaviya.github.io/Pokedex/static/js/main.597405cc.js",
+    "static/js/453.ac4c0547.chunk.js": "/AyanMalaviya.github.io/Pokedex/static/js/453.ac4c0547.chunk.js",
+    "static/media/slick.svg": "/AyanMalaviya.github.io/Pokedex/static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "/AyanMalaviya.github.io/Pokedex/static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/slick.ttf": "/AyanMalaviya.github.io/Pokedex/static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "/AyanMalaviya.github.io/Pokedex/static/media/slick.295183786cd8a1389865.woff",
+    "index.html": "/AyanMalaviya.github.io/Pokedex/index.html",
+    "main.5a379b14.css.map": "/AyanMalaviya.github.io/Pokedex/static/css/main.5a379b14.css.map",
+    "main.597405cc.js.map": "/AyanMalaviya.github.io/Pokedex/static/js/main.597405cc.js.map",
+    "453.ac4c0547.chunk.js.map": "/AyanMalaviya.github.io/Pokedex/static/js/453.ac4c0547.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.6bcd2c5c.css",
-    "static/js/main.9c44a194.js"
+    "static/css/main.5a379b14.css",
+    "static/js/main.597405cc.js"
   ]
 }
