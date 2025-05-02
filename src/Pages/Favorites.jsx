@@ -40,6 +40,24 @@ const Favorites = () => {
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, textAlign: 'center' }}>
         <StarIcon sx={{ color: '#FFD600', mb: '-6px', mr: 1 }} /> Favorite Pokémon
       </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+        <button
+          onClick={() => navigate('/')}
+          style={{
+            background: '#FFD600',
+            color: '#222',
+            border: 'none',
+            borderRadius: 8,
+            padding: '8px 20px',
+            fontWeight: 600,
+            fontSize: '1rem',
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.07)'
+          }}
+        >
+          Go to Home
+        </button>
+      </Box>
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
           <CircularProgress size={60} color="primary" />
@@ -74,7 +92,7 @@ const Favorites = () => {
                 onClick={() => navigate(`/pokemon/${pokemon.name}`)}
               >
                 <Box sx={{ position: 'absolute', top: 12, right: 12, zIndex: 2 }}>
-                  <StarIcon sx={{ color: '#FFD600', fontSize: 32 }} />
+                  <StarIcon sx={{ color: '#FFD600', fontSize: 32, opacity: 1 }} />
                 </Box>
                 <CardMedia
                   component="img"

@@ -11,7 +11,7 @@ function App() {
   return (
     <FavoritesProvider>
       <ErrorBoundary>
-        <Router basename="/">
+        <Router basename="/Pokedex">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/pokemon/:name" element={<PokemonDetail />} />
