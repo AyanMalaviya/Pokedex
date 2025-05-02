@@ -35,6 +35,37 @@
   box-shadow: 0 2px 8px rgba(255, 214, 0, 0.12) !important;
 }
 
+.header-nav {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+  width: 100%;
+  flex: 1;
+}
+
+.nav-link {
+  color: #FFD600;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: 8px;
+  transition: background 0.18s, color 0.18s;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: #FFD600;
+  color: #222 !important;
+  text-decoration: none;
+}
+
 @media (max-width: 600px) {
   .MuiPaper-root {
     flex-direction: column;

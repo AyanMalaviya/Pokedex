@@ -25,7 +25,7 @@ const Header = ({ setSearchTerm, setTypeFilter }) => {
 
   return (
     <AppBar position="static" color="default" elevation={2} className="header-appbar">
-      <Toolbar sx={{ flexDirection: 'column', alignItems: 'center', py: 2 }}>
+      <Toolbar sx={{ flexDirection: 'column', alignItems: 'center', py: 2, width: '100%' }}>
         <Typography variant="h4" component="div" sx={{ color: '#FFD600', fontWeight: 'bold', letterSpacing: 2, mb: 1 }}>
           Pokedex Explorer
         </Typography>
