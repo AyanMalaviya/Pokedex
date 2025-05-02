@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { fetchPokemons, fetchPokemonDetails } from '../Services/api';
 import Header from '../Components/Header';
 import './Home.css';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
+import { useFavorites } from '../hooks/useFavorites';
 
 import {
   Box,
@@ -17,13 +18,9 @@ import {
   Stack
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-
-const FAVORITES_KEY = 'favorite_pokemon';
 
 const Home = () => {
   const [pokemons, setPokemons] = useState([]);
-  const [filteredPokemons, setFilteredPokemons] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,10 +28,7 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortOption, setSortOption] = useState('id-asc');
-  const [favorites, setFavorites] = useState(() => {
-    const stored = localStorage.getItem(FAVORITES_KEY);
-    return stored ? JSON.parse(stored) : [];
-  });
+  const { toggleFavorite, isFavorite } = useFavorites();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +39,6 @@ const Home = () => {
           basicData.map((poke) => fetchPokemonDetails(poke.url))
         );
         setPokemons(detailedData);
-        setFilteredPokemons(detailedData);
       } catch (err) {
         setError('Failed to fetch Pokémon. Please try again later.');
       } finally {
@@ -55,11 +48,7 @@ const Home = () => {
     loadPokemons();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-  }, [favorites]);
-
-  useEffect(() => {
+  const filteredPokemons = useMemo(() => {
     let filtered = pokemons;
     if (searchTerm) {
       filtered = filtered.filter((poke) =>
@@ -71,7 +60,6 @@ const Home = () => {
         poke.types.some((t) => typeFilter.includes(t.type.name))
       );
     }
-
     // Sorting
     filtered = [...filtered].sort((a, b) => {
       if (sortOption === 'id-asc') return a.id - b.id;
@@ -80,21 +68,20 @@ const Home = () => {
       if (sortOption === 'name-desc') return b.name.localeCompare(a.name);
       return 0;
     });
+    return filtered;
+  }, [pokemons, searchTerm, typeFilter, sortOption]);
 
-    setFilteredPokemons(filtered);
-    setCurrentPage(1); // Reset to first page on filter/sort change
-  }, [searchTerm, typeFilter, pokemons, sortOption]);
+  const paginatedPokemons = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredPokemons.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredPokemons, currentPage, itemsPerPage]);
 
-  const toggleFavorite = (id) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
-    );
-  };
+  const handleToggleFavorite = useCallback((id, e) => {
+    e.stopPropagation();
+    toggleFavorite(id);
+  }, [toggleFavorite]);
 
-  // Pagination
   const totalPages = Math.ceil(filteredPokemons.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedPokemons = filteredPokemons.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <Box className="home-container">
@@ -149,16 +136,9 @@ const Home = () => {
                     right: 12,
                     zIndex: 2
                   }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(pokemon.id);
-                  }}
+                  onClick={(e) => handleToggleFavorite(pokemon.id, e)}
                 >
-                  {favorites.includes(pokemon.id) ? (
-                    <StarIcon sx={{ color: '#FFD600', fontSize: 32 }} />
-                  ) : (
-                    <StarBorderIcon sx={{ color: '#FFD600', fontSize: 32 }} />
-                  )}
+                  <StarIcon sx={{ color: '#FFD600', fontSize: 32, opacity: isFavorite(pokemon.id) ? 1 : 0.3 }} />
                 </Box>
                 <img
                   src={pokemon.sprites.other?.['official-artwork']?.front_default || pokemon.sprites.front_default}
