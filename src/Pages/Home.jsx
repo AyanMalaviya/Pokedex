@@ -16,6 +16,10 @@ import {
   Pagination,
   Stack
 } from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+
+const FAVORITES_KEY = 'favorite_pokemon';
 
 const Home = () => {
   const [pokemons, setPokemons] = useState([]);
@@ -27,6 +31,10 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortOption, setSortOption] = useState('id-asc');
+  const [favorites, setFavorites] = useState(() => {
+    const stored = localStorage.getItem(FAVORITES_KEY);
+    return stored ? JSON.parse(stored) : [];
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,6 +54,10 @@ const Home = () => {
     };
     loadPokemons();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  }, [favorites]);
 
   useEffect(() => {
     let filtered = pokemons;
@@ -73,13 +85,19 @@ const Home = () => {
     setCurrentPage(1); // Reset to first page on filter/sort change
   }, [searchTerm, typeFilter, pokemons, sortOption]);
 
+  const toggleFavorite = (id) => {
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
+    );
+  };
+
   // Pagination
   const totalPages = Math.ceil(filteredPokemons.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPokemons = filteredPokemons.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <Box className="home-container" sx={{ px: { xs: 1, sm: 3 }, py: 2 }}>
+    <Box className="home-container">
       <Header setSearchTerm={setSearchTerm} setTypeFilter={setTypeFilter} />
       {loading ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
@@ -124,6 +142,24 @@ const Home = () => {
           <div className="pokemon-grid">
             {paginatedPokemons.map((pokemon) => (
               <div className="pokemon-card" key={pokemon.id} onClick={() => navigate(`/pokemon/${pokemon.name}`)}>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    zIndex: 2
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(pokemon.id);
+                  }}
+                >
+                  {favorites.includes(pokemon.id) ? (
+                    <StarIcon sx={{ color: '#FFD600', fontSize: 32 }} />
+                  ) : (
+                    <StarBorderIcon sx={{ color: '#FFD600', fontSize: 32 }} />
+                  )}
+                </Box>
                 <img
                   src={pokemon.sprites.other?.['official-artwork']?.front_default || pokemon.sprites.front_default}
                   alt={pokemon.name}
