@@ -1,0 +1,87 @@
+/* src/Pages/PokemonDetail.css */
+.pokemon-detail-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
+  padding: 32px;
+  max-width: 600px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.pokemon-detail-container img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  margin-bottom: 20px;
+}
+
+.pokemon-detail-container h1 {
+  margin-bottom: 16px;
+}
+
+.pokemon-detail-container span {
+  color: #888;
+  font-size: 1rem;
+}
+
+.types {
+  margin-bottom: 16px;
+}
+
+.type {
+  display: inline-block;
+  background: #eee;
+  border-radius: 8px;
+  padding: 2px 10px;
+  margin: 0 4px;
+  font-size: 0.95em;
+  text-transform: capitalize;
+}
+
+.stats, .abilities, .moves, .evolution {
+  margin: 18px 0;
+  text-align: left;
+}
+
+.stats ul, .abilities ul, .moves ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.evo-chain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.evo-link {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.evo-link:hover {
+  text-decoration: underline;
+}
+
+.evo-arrow {
+  margin: 0 8px;
+  font-size: 1.2em;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 1.1em;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
