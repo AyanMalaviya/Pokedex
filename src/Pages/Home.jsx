@@ -1,18 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { fetchPokemons, fetchPokemonDetails } from '../Services/api';
 import Header from '../Components/Header';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import './Home.css';
+import '../App.css';
+
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Chip,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  CircularProgress,
+  Pagination,
+  Stack
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Home = () => {
   const [pokemons, setPokemons] = useState([]);
   const [filteredPokemons, setFilteredPokemons] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedPokemon, setSelectedPokemon] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [sortOption, setSortOption] = useState('id-asc');
 
   useEffect(() => {
     const loadPokemons = async () => {
@@ -25,7 +50,6 @@ const Home = () => {
         setFilteredPokemons(detailedData);
       } catch (err) {
         setError('Failed to fetch Pokémon. Please try again later.');
-
       } finally {
         setLoading(false);
       }
@@ -40,249 +64,175 @@ const Home = () => {
         poke.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    if (typeFilter) {
+    if (typeFilter.length > 0) {
       filtered = filtered.filter((poke) =>
-        poke.types.some((t) => t.type.name === typeFilter)
+        poke.types.some((t) => typeFilter.includes(t.type.name))
       );
     }
+
+    // Sorting
+    filtered = [...filtered].sort((a, b) => {
+      if (sortOption === 'id-asc') return a.id - b.id;
+      if (sortOption === 'id-desc') return b.id - a.id;
+      if (sortOption === 'name-asc') return a.name.localeCompare(b.name);
+      if (sortOption === 'name-desc') return b.name.localeCompare(a.name);
+      return 0;
+    });
+
     setFilteredPokemons(filtered);
-  }, [searchTerm, typeFilter, pokemons]);
+    setCurrentPage(1); // Reset to first page on filter/sort change
+  }, [searchTerm, typeFilter, pokemons, sortOption]);
 
-  // Group pokemons by type, ensuring no duplicates in each group
-  const getTypeGroups = () => {
-    const groups = {};
-    filteredPokemons.forEach((poke) => {
-      poke.types.forEach((t) => {
-        const type = t.type.name;
-        if (!groups[type]) groups[type] = new Map();
-        groups[type].set(poke.id, poke); // Use Map to deduplicate by id
-      });
-    });
-    // Convert each Map to array
-    Object.keys(groups).forEach(type => {
-      groups[type] = Array.from(groups[type].values());
-    });
-    return groups;
-  };
-  const typeGroups = getTypeGroups();
-  const typesToShow = typeFilter ? [typeFilter] : Object.keys(typeGroups);
-  const showGrouped = !searchTerm && !typeFilter;
+  // Pagination
+  const totalPages = Math.ceil(filteredPokemons.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedPokemons = filteredPokemons.slice(startIndex, startIndex + itemsPerPage);
 
-  // Helper to render all details
   const renderPokemonDetails = (pokemon) => (
-    <div style={{
-      background: '#fff',
-      borderRadius: 16,
-      boxShadow: '0 4px 32px rgba(0,0,0,0.18)',
-      padding: 32,
-      maxWidth: 420,
-      margin: '40px auto',
-      position: 'relative',
-      zIndex: 1001
-    }}>
-      <button onClick={() => setSelectedPokemon(null)} style={{
-        position: 'absolute',
-        top: 16,
-        right: 16,
-        background: '#ef5350',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '50%',
-        width: 32,
-        height: 32,
-        fontSize: 18,
-        cursor: 'pointer',
-        fontWeight: 'bold',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
-      }}>×</button>
-      <img src={pokemon.sprites.other?.['official-artwork']?.front_default || pokemon.sprites.front_default} alt={pokemon.name} style={{ width: 180, height: 180, objectFit: 'contain', display: 'block', margin: '0 auto 16px auto' }} />
-      <h2 style={{ textAlign: 'center', margin: '8px 0 4px 0' }}>{pokemon.name.toUpperCase()} <span style={{ color: '#888', fontSize: 18 }}>#{pokemon.id}</span></h2>
-      <div style={{ textAlign: 'center', marginBottom: 12 }}>
-        {pokemon.types.map(t => (
-          <span key={t.type.name} style={{ background: '#ffd600', borderRadius: 8, padding: '4px 12px', margin: '0 4px', fontWeight: 600 }}>{t.type.name}</span>
-        ))}
-      </div>
-      <div style={{ fontSize: 15, color: '#444', marginBottom: 8 }}><b>Height:</b> {pokemon.height}</div>
-      <div style={{ fontSize: 15, color: '#444', marginBottom: 8 }}><b>Weight:</b> {pokemon.weight}</div>
-      <div style={{ fontSize: 15, color: '#444', marginBottom: 8 }}><b>Base Experience:</b> {pokemon.base_experience}</div>
-      <div style={{ fontSize: 15, color: '#444', marginBottom: 8 }}><b>Abilities:</b> {pokemon.abilities.map(a => a.ability.name).join(', ')}</div>
-      <div style={{ fontSize: 15, color: '#444', marginBottom: 8 }}><b>Stats:</b>
+    <Dialog
+      open={!!pokemon}
+      onClose={() => setSelectedPokemon(null)}
+      maxWidth="xs"
+      fullWidth
+      PaperProps={{
+        sx: { borderRadius: 3, p: 2 }
+      }}
+    >
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span>
+          {pokemon.name.toUpperCase()} <Typography component="span" color="text.secondary">#{pokemon.id}</Typography>
+        </span>
+        <Button onClick={() => setSelectedPokemon(null)} color="error" size="small">
+          <CloseIcon />
+        </Button>
+      </DialogTitle>
+      <DialogContent dividers>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
+          <CardMedia
+            component="img"
+            image={pokemon.sprites.other?.['official-artwork']?.front_default || pokemon.sprites.front_default}
+            alt={pokemon.name}
+            sx={{ width: 180, height: 180, objectFit: 'contain', mb: 2 }}
+          />
+          <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+            {pokemon.types.map(t => (
+              <Chip key={t.type.name} label={t.type.name} color="warning" variant="filled" />
+            ))}
+          </Stack>
+        </Box>
+        <Typography variant="body2"><b>Height:</b> {pokemon.height}</Typography>
+        <Typography variant="body2"><b>Weight:</b> {pokemon.weight}</Typography>
+        <Typography variant="body2"><b>Base Experience:</b> {pokemon.base_experience}</Typography>
+        <Typography variant="body2"><b>Abilities:</b> {pokemon.abilities.map(a => a.ability.name).join(', ')}</Typography>
+        <Typography variant="body2" sx={{ mt: 1 }}><b>Stats:</b></Typography>
         <ul style={{ margin: 0, paddingLeft: 18 }}>
           {pokemon.stats.map(s => (
-            <li key={s.stat.name}>{s.stat.name}: {s.base_stat}</li>
+            <li key={s.stat.name}>
+              <Typography variant="body2" component="span">{s.stat.name}: {s.base_stat}</Typography>
+            </li>
           ))}
         </ul>
-      </div>
-      <div style={{ fontSize: 15, color: '#444', marginBottom: 8 }}><b>Moves:</b> {pokemon.moves.slice(0, 8).map(m => m.move.name).join(', ')}{pokemon.moves.length > 8 ? '...' : ''}</div>
-      <div style={{ fontSize: 15, color: '#444', marginBottom: 8 }}><b>Order:</b> {pokemon.order}</div>
-      <div style={{ fontSize: 15, color: '#444', marginBottom: 8 }}><b>Species:</b> {pokemon.species.name}</div>
-      <div style={{ fontSize: 15, color: '#444', marginBottom: 8 }}><b>Game Indices:</b> {pokemon.game_indices.length}</div>
-    </div>
+        <Typography variant="body2"><b>Moves:</b> {pokemon.moves.slice(0, 8).map(m => m.move.name).join(', ')}{pokemon.moves.length > 8 ? '...' : ''}</Typography>
+        <Typography variant="body2"><b>Order:</b> {pokemon.order}</Typography>
+        <Typography variant="body2"><b>Species:</b> {pokemon.species.name}</Typography>
+        <Typography variant="body2"><b>Game Indices:</b> {pokemon.game_indices.length}</Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setSelectedPokemon(null)} color="primary">Close</Button>
+      </DialogActions>
+    </Dialog>
   );
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: 24, position: 'relative' }}>
+    <Box className="home-container" sx={{ px: { xs: 1, sm: 3 }, py: 2 }}>
       <Header setSearchTerm={setSearchTerm} setTypeFilter={setTypeFilter} />
-      {selectedPokemon && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'rgba(0,0,0,0.45)',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          {renderPokemonDetails(selectedPokemon)}
-        </div>
-      )}
+      {selectedPokemon && renderPokemonDetails(selectedPokemon)}
       {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
-          <div className="circle-loader" />
-        </div>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
+          <CircularProgress size={60} color="primary" />
+        </Box>
       ) : error ? (
-        <p>{error}</p>
+        <Typography color="error">{error}</Typography>
       ) : filteredPokemons.length === 0 ? (
-        <p>No Pokémon found!</p>
-      ) : showGrouped ? (
-        typesToShow.map((type) => (
-          <div key={type} style={{ marginBottom: 48 }}>
-            <h2 style={{ textTransform: 'capitalize', margin: '24px 0 12px 0', color: '#555' }}>{type} Type</h2>
-            <Slider {...{
-              dots: true,
-              infinite: true,
-              speed: 800,
-              slidesToShow: 3,
-              slidesToScroll: 1,
-              centerMode: true,
-              autoplay: true,
-              autoplaySpeed: 3500,
-              pauseOnHover: true,
-              arrows: true,
-              responsive: [
-                { breakpoint: 900, settings: { slidesToShow: 2 } },
-                { breakpoint: 600, settings: { slidesToShow: 1 } }
-              ]
-            }}>
-              {typeGroups[type].map((pokemon) => (
-                <div key={pokemon.id} style={{ padding: 16 }}>
-                  <div onClick={() => setSelectedPokemon(pokemon)} style={{
-                    background: '#fff',
-                    borderRadius: 16,
-                    boxShadow: '0 2px 16px rgba(0,0,0,0.12)',
-                    textAlign: 'center',
-                    padding: 24,
-                    minHeight: 340,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'box-shadow 0.2s, transform 0.2s',
-                  }}>
-                    <img
-                      src={pokemon.sprites.other?.['official-artwork']?.front_default || pokemon.sprites.front_default}
-                      alt={pokemon.name}
-                      style={{ width: 220, height: 220, objectFit: 'contain', marginBottom: 16, transition: 'transform 0.3s' }}
-                      onMouseOver={e => e.currentTarget.style.transform = 'scale(1.08)'}
-                      onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-                    />
-                    <h3 style={{ margin: 0, fontWeight: 700, letterSpacing: 1 }}>{pokemon.name.toUpperCase()}</h3>
-                    <p style={{ margin: 0, color: '#888' }}>#{pokemon.id}</p>
-                    <div style={{ marginTop: 8 }}>
-                      {pokemon.types.map((t) => (
-                        <span
-                          key={t.type.name}
-                          style={{
-                            display: 'inline-block',
-                            background: '#f5f5f5',
-                            borderRadius: 8,
-                            padding: '2px 10px',
-                            margin: '0 4px',
-                            fontSize: 13,
-                            fontWeight: 500,
-                            color: '#333'
-                          }}
-                        >
-                          {t.type.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </Slider>
-          </div>
-        ))
+        <Typography>No Pokémon found!</Typography>
       ) : (
-        <Slider {...{
-          dots: true,
-          infinite: true,
-          speed: 800,
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          centerMode: true,
-          autoplay: true,
-          autoplaySpeed: 3500,
-          pauseOnHover: true,
-          arrows: true,
-          responsive: [
-            { breakpoint: 900, settings: { slidesToShow: 2 } },
-            { breakpoint: 600, settings: { slidesToShow: 1 } }
-          ]
-        }}>
-          {filteredPokemons.map((pokemon) => (
-            <div key={pokemon.id} style={{ padding: 16 }}>
-              <div style={{
-                background: '#fff',
-                borderRadius: 16,
-                boxShadow: '0 2px 16px rgba(0,0,0,0.12)',
-                textAlign: 'center',
-                padding: 24,
-                minHeight: 340,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <img
-                  src={pokemon.sprites.other?.['official-artwork']?.front_default || pokemon.sprites.front_default}
-                  alt={pokemon.name}
-                  style={{ width: 220, height: 220, objectFit: 'contain', marginBottom: 16, transition: 'transform 0.3s' }}
-                  onMouseOver={e => e.currentTarget.style.transform = 'scale(1.08)'}
-                  onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-                />
-                <h3 style={{ margin: 0, fontWeight: 700, letterSpacing: 1 }}>{pokemon.name.toUpperCase()}</h3>
-                <p style={{ margin: 0, color: '#888' }}>#{pokemon.id}</p>
-                <div style={{ marginTop: 8 }}>
-                  {pokemon.types.map((t) => (
-                    <span
-                      key={t.type.name}
-                      style={{
-                        display: 'inline-block',
-                        background: '#f5f5f5',
-                        borderRadius: 8,
-                        padding: '2px 10px',
-                        margin: '0 4px',
-                        fontSize: 13,
-                        fontWeight: 500,
-                        color: '#333'
-                      }}
-                    >
-                      {t.type.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </Slider>
+        <>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" alignItems="center" sx={{ my: 2 }}>
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>Sort</InputLabel>
+              <Select
+                label="Sort"
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+              >
+                <MenuItem value="id-asc">Sort by ID (Asc)</MenuItem>
+                <MenuItem value="id-desc">Sort by ID (Desc)</MenuItem>
+                <MenuItem value="name-asc">Sort by Name (A-Z)</MenuItem>
+                <MenuItem value="name-desc">Sort by Name (Z-A)</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <InputLabel>Per Page</InputLabel>
+              <Select
+                label="Per Page"
+                value={itemsPerPage}
+                onChange={(e) => {
+                  setItemsPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+              >
+                <MenuItem value={10}>10 per page</MenuItem>
+                <MenuItem value={20}>20 per page</MenuItem>
+                <MenuItem value={50}>50 per page</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+          <Grid container spacing={2} justifyContent="center">
+            {paginatedPokemons.map((pokemon) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={pokemon.id}>
+                <Card
+                  sx={{
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s',
+                    '&:hover': { transform: 'scale(1.04)', boxShadow: 6 }
+                  }}
+                  onClick={() => setSelectedPokemon(pokemon)}
+                  elevation={3}
+                >
+                  <CardMedia
+                    component="img"
+                    image={pokemon.sprites.other?.['official-artwork']?.front_default || pokemon.sprites.front_default}
+                    alt={pokemon.name}
+                    sx={{ width: 120, height: 120, objectFit: 'contain', mx: 'auto', mt: 2 }}
+                  />
+                  <CardContent sx={{ textAlign: 'center' }}>
+                    <Typography variant="h6">{pokemon.name.toUpperCase()}</Typography>
+                    <Typography variant="body2" color="text.secondary">#{pokemon.id}</Typography>
+                    <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 1 }}>
+                      {pokemon.types.map((t) => (
+                        <Chip key={t.type.name} label={t.type.name} size="small" color="warning" />
+                      ))}
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+          <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(_, value) => setCurrentPage(value)}
+              color="primary"
+              shape="rounded"
+              showFirstButton
+              showLastButton
+            />
+          </Box>
+        </>
       )}
-      <div className="sliding-bar"></div>
-    </div>
+      <Box className="sliding-bar"></Box>
+    </Box>
   );
 };
 
