@@ -74,7 +74,7 @@ const Favorites = () => {
             </Typography>
           </Fade>
         ) : (
-          <Grid container spacing={4} className="favorites-grid" justifyContent="center" sx={{ mt: 1 }}>
+          <Grid container spacing={6} className="favorites-grid" justifyContent="center" sx={{ mt: 1 }}>
             {memoizedFavorites.map((pokemon) => (
               <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4} key={pokemon.id}>
                 <Fade in timeout={500}>

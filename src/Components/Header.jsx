@@ -82,7 +82,7 @@ const Header = ({ setSearchTerm, setTypeFilter, comparePokemonList, setCompareFi
             flexWrap: 'wrap',
             justifyContent: 'center',
             alignItems: 'center',
-            p: 2,
+            p: 0,
             background: '#fffbe6',
             borderRadius: 2,
             mt: 1,
