@@ -12,13 +12,28 @@ import HomeIcon from '@mui/icons-material/Home';
 import CasinoIcon from '@mui/icons-material/Casino';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 
-const Header = ({ setSearchTerm, setTypeFilter }) => {
+const Header = ({ setSearchTerm, setTypeFilter, comparePokemonList, setCompareFirst, setCompareSecond }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
   // Random Pokémon button handler
   const handleRandom = () => {
-    // There are 1-1010 Pokémon in the PokéAPI as of Gen 9
+    if (location.pathname === '/compare' && comparePokemonList && comparePokemonList.length && (setCompareFirst || setCompareSecond)) {
+      // Pick a random Pokémon from the list
+      const randomIdx = Math.floor(Math.random() * comparePokemonList.length);
+      const randomName = comparePokemonList[randomIdx].name;
+      // Randomly choose to set first or second
+      if (setCompareFirst && setCompareSecond) {
+        if (Math.random() < 0.5) setCompareFirst(randomName);
+        else setCompareSecond(randomName);
+      } else if (setCompareFirst) {
+        setCompareFirst(randomName);
+      } else if (setCompareSecond) {
+        setCompareSecond(randomName);
+      }
+      return;
+    }
+    // Default: navigate to random Pokémon detail
     const randomId = Math.floor(Math.random() * 1010) + 1;
     navigate(`/pokemon/${randomId}`);
   };
@@ -29,7 +44,7 @@ const Header = ({ setSearchTerm, setTypeFilter }) => {
         <Typography variant="h4" component="div" sx={{ color: '#FFD600', fontWeight: 'bold', letterSpacing: 2, mb: 1 }}>
           Pokedex Explorer
         </Typography>
-        <nav className="header-nav" style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+        <nav className="header-nav">
           <Link
             to="/"
             className={`nav-link${location.pathname === '/' ? ' active' : ''}`}
@@ -50,16 +65,9 @@ const Header = ({ setSearchTerm, setTypeFilter }) => {
           </Link>
           <button
             onClick={handleRandom}
+            className="nav-random-btn"
             style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: location.pathname.startsWith('/pokemon/') ? '#FFD600' : '#222',
-              fontWeight: 600,
-              fontSize: '1rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4
+              color: location.pathname.startsWith('/pokemon/') ? '#FFD600' : undefined
             }}
             title="Random Pokémon"
           >

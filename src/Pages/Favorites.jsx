@@ -3,6 +3,7 @@ import { fetchPokemonDetails } from '../Services/api';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, CircularProgress, Grid, Card, CardContent, CardMedia, Chip, Stack, Button, Fade, Paper } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
+import HomeIcon from '@mui/icons-material/Home';
 import { useFavorites } from '../hooks/useFavorites';
 import './Favorites.css';
 
@@ -43,21 +44,24 @@ const Favorites = () => {
           <Typography className="favorites-title" variant="h4" component="div" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 800, color: '#222', letterSpacing: 2 }}>
             <StarIcon sx={{ color: '#FFD600', mb: '-6px', mr: 1, fontSize: 36 }} /> Favorite Pokémon
           </Typography>
-          <Button
-            onClick={() => navigate('/')}
-            variant="contained"
-            sx={{
-              background: '#FFD600',
-              color: '#222',
-              fontWeight: 700,
-              fontSize: '1.1rem',
-              borderRadius: 2,
-              boxShadow: 2,
-              '&:hover': { background: '#ffe066', color: '#000' }
-            }}
-          >
-            Go to Home
-          </Button>
+          <Stack direction="row" spacing={2}>
+            <Button
+              onClick={() => navigate('/')}
+              variant="contained"
+              startIcon={<HomeIcon />}
+              sx={{
+                background: '#FFD600',
+                color: '#222',
+                fontWeight: 700,
+                fontSize: '1.1rem',
+                borderRadius: 2,
+                boxShadow: 2,
+                '&:hover': { background: '#ffe066', color: '#000' }
+              }}
+            >
+              Home
+            </Button>
+          </Stack>
         </Stack>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
